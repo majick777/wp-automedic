@@ -155,9 +155,9 @@ global $vautomedic; $vautomedic = get_option('wp_automedic');
 // --------------------
 function automedic_get_option($vkey,$vfilter=true) {
 	global $vautomedic;
-	$vkey = str_replace('am_','',$vkey);
+	$vkey = str_replace('am_', '', $vkey);
 	if (isset($vautomedic[$vkey])) {
-		if ($vfilter) {return apply_filters('automedic_'.$vkey,$vvalue);}
+		if ($vfilter) {return apply_filters('automedic_'.$vkey, $vvalue);}
 		else {return $vautomedic[$vkey];}
 	} else {
 		// 1.3.5: use default fallbacks
@@ -175,12 +175,12 @@ function automedic_get_defaults($vtype) {
 	if ($vtype == 'images') {
 		// return 'both,5,30,2,1,1,0';
 		return array('reload' => '1', 'context' => 'both', 'delay' => 5, 'cycle' => '30',
-		'attempts' => 2, 'external' => 1, 'cache' => 1, 'debug' => 0);
+						'attempts' => 2, 'external' => 1, 'cache' => 1, 'debug' => 0);
 	}
 	if ($vtype == 'styles') {
 		// return 'both,2,20,3,1,1,0';
 		return array('reload' => '1', 'context' => 'both', 'delay' => 2, 'cycle' => '20',
-		'attempts' => 3, 'external' => 1, 'cache' => 1, 'debug' => 0);
+						'attempts' => 3, 'external' => 1, 'cache' => 1, 'debug' => 0);
 	}
 }
 
@@ -192,9 +192,8 @@ if ( (!$vautomedic) && (get_option('automedic_images')) ) {
 	$vautomedic['switch'] = get_option('automedic_switch'); delete_option('automedic_switch');
 	$vautomedic['selfcheck'] = get_option('automedic_selfcheck'); delete_option('automedic_selfcheck');
 
-	$vtemp['images'] = explode(',',get_option('automedic_images')); delete_option('automedic_images');
-	$vtemp['styles'] = explode(',',get_option('automedic_stylesheets')); delete_option('automedic_stylesheets');
-	delete_option('automedic_scripts'); delete_option('automedic_iframes'); delete_option('automedic_embeds');
+	$vtemp['images'] = explode(',', get_option('automedic_images')); delete_option('automedic_images');
+	$vtemp['styles'] = explode(',', get_option('automedic_stylesheets')); delete_option('automedic_stylesheets');
 
 	foreach ($vtemp as $vkey => $vsettings) {
 		$vautomedic[$vkey] = array('reload' => $vsettings[0], 'context' => $vsettings[1],
@@ -206,7 +205,7 @@ if ( (!$vautomedic) && (get_option('automedic_images')) ) {
 
 // add Default Options
 // -------------------
-register_activation_hook(__FILE__,'automedic_add_default_settings');
+register_activation_hook(__FILE__, 'automedic_add_default_settings');
 function automedic_add_default_settings() {
 
 	// 1.4.0: use global plugin option
@@ -225,25 +224,19 @@ function automedic_add_default_settings() {
 	add_option('am_sidebar_options',$sidebaroptions);
 
 }
-// 1.4.0: maybe trigger pro version options
-if (function_exists('automedic_pro_add_default_settings')) {
-	register_activation_hook(__FILE__,'automedic_pro_add_default_settings');
-}
-
-// Update Options Trigger
-// ----------------------
-if ( (isset($_POST['am_save_options'])) && ($_POST['am_save_options'] == 'yes') ) {
-	add_action('init','automedic_update_options');
-}
 
 // Update Options
 // --------------
+add_action('admin_init', 'automedic_update_options');
 function automedic_update_options() {
 
+	// 1.4.0: moved post value checks to inside function
+	if (!isset($_POST['am_save_options'])) {return;}
+	if ($_POST['am_save_options'] != 'yes') {return;}
 	if (!current_user_can('manage_options')) {exit;}
-
 	// 1.4.0: check nonce value
 	check_admin_referer('wp-automedic');
+
 	// 1.4.0: use global option value
 	global $vautomedic;
 
@@ -264,11 +257,11 @@ function automedic_update_options() {
 	$vdefaults['images'] = automedic_get_defaults('images');
 	$vdefaults['styles'] = automedic_get_defaults('styles');
 
-	$vtypes = array('images','styles');
-	$vkeys = array('reload','delay','cycle','attempts','external','cache','debug');
-	$vinputs = array('delay','cycle','attempts');
-	$vcheckboxes = array('external','cache','debug');
-	$vscopes = array('frontend','backend','both','off');
+	$vtypes = array('images', 'styles');
+	$vkeys = array('reload', 'delay', 'cycle', 'attempts', 'external', 'cache', 'debug');
+	$vinputs = array('delay', 'cycle', 'attempts');
+	$vcheckboxes = array('external', 'cache', 'debug');
+	$vscopes = array('frontend', 'backend', 'both', 'off');
 
 	foreach ($vtypes as $vtype) {
 		foreach ($vkeys as $vkey) {
@@ -285,7 +278,7 @@ function automedic_update_options() {
 			}
 			elseif ($vkey == 'reload') {
 				// 1.4.0: validate exact scope options
-				if (!in_array($vvalue,$vscopes)) {$vvalue = 'off';}
+				if (!in_array($vvalue, $vscopes)) {$vvalue = 'off';}
 			}
 			$vautomedic[$vtype][$vkey] = $vvalue;
 		}
@@ -299,7 +292,7 @@ function automedic_update_options() {
 	// echo "Validated Values: "; print_r($vautomedic);
 	// $debug = ob_get_contents(); ob_end_clean();
 
-	update_option('wp_automedic',$vautomedic);
+	update_option('wp_automedic', $vautomedic);
 
 	// 1.4.0: maybe update pro options also
 	if (function_exists('automedic_pro_update_options')) {automedic_pro_update_options();}
@@ -328,7 +321,7 @@ function automedic_settings_page() {
 	// Sidebar Floatbox
 	// ----------------
 	// $vargs = array('am','wp-automedic','free','wp-automedic','','WP AutoMedic',$vautomedicversion);
-	$vargs = array('wp-automedic','yes'); // trimmed settings
+	$vargs = array('wp-automedic', 'yes'); // trimmed settings
 	if (function_exists('wqhelper_sidebar_floatbox')) {
 		wqhelper_sidebar_floatbox($vargs);
 
@@ -519,9 +512,9 @@ function automedic_settings_page() {
 // Enqueue Scripts
 // ===============
 
-add_action('wp_enqueue_scripts','automedic_enqueue_script');
+add_action('wp_enqueue_scripts', 'automedic_enqueue_script');
 // 1.4.0: also add action to admin_enqueue_scripts
-add_action('admin_enqueue_scripts','automedic_enqueue_script');
+add_action('admin_enqueue_scripts', 'automedic_enqueue_script');
 
 // Enqueue Reloader Script
 // -----------------------
@@ -551,12 +544,12 @@ function automedic_enqueue_script() {
 	if (is_admin()) {
 		if ( ($vimages['reload'] == 'admin') || ($vimages['reload'] == 'both') ||
 			 ($vstyles['reload'] == 'admin') || ($vstyles['reload'] == 'both') ) {
-			$vautomedicscript = plugins_url('automedic.js',__FILE__);
+			$vautomedicscript = plugins_url('automedic.js', __FILE__);
 		}
 	} else {
 		if ( ($vimages['reload'] == 'frontend') || ($vimages['reload'] == 'both') ||
 			 ($vstyles['reload'] == 'frontend') || ($vstyles['reload'] == 'both') ) {
-			$vautomedicscript = plugins_url('automedic.js',__FILE__);
+			$vautomedicscript = plugins_url('automedic.js', __FILE__);
 		}
 	}
 
@@ -657,9 +650,9 @@ function automedic_script_variables() {
 // ---------------
 if ( ($vautomedic['switch']) && ($vautomedic['selfcheck']) ) {
 
-	add_action('wp_footer','automedic_self_load_check',99);
+	add_action('wp_footer', 'automedic_self_load_check',99);
 	// 1.4.0: add admin_footer action for backend self check
-	add_action('admin_footer','automedic_self_load_check',99);
+	add_action('admin_footer', 'automedic_self_load_check',99);
 
 	function automedic_self_load_check() {
 
@@ -672,11 +665,11 @@ if ( ($vautomedic['switch']) && ($vautomedic['selfcheck']) ) {
 
 		// so much simpler to check than for dynamic scripts,
 		// as we actually know a function name to test for..!
-		echo "<script>if (typeof amCacheBust != 'function') {
-			ams = document.createElement('script');
-			ams.src = '".$vautomedicscript."';
-			document.body.appendChild(ams);
-		}</script>";
+		echo "<script>if (typeof amCacheBust != 'function') {".PHP_EOL;
+		echo "	ams = document.createElement('script');".PHP_EOL;
+		echo "	ams.src = '".$vautomedicscript."';".PHP_EOL;
+		echo "	document.body.appendChild(ams);".PHP_EOL;
+		echo "}</script>".PHP_EOL;
 	}
 }
 
@@ -698,24 +691,24 @@ function automedic_check_style_reload() {
 	if ( ($vstyles['reload'] == 'both')
 	  || ( ($vstyles['reload'] == 'frontend') && (!is_admin()) )
 	  || ( ($vstyles['reload'] == 'admin') && (is_admin()) ) ) {
-		add_filter('style_loader_tag','automedic_process_style_tags', 11, 2);
+		add_filter('style_loader_tag', 'automedic_process_style_tags', 11, 2);
 	}
 
 }
 
 // Process All WordPress Style Tags
 // --------------------------------
-function automedic_process_style_tags($vlink,$vhandle) {
+function automedic_process_style_tags($vlink, $vhandle) {
 
 	global $vautomedicstylenum;
 
 	// do a filter check using the style handle
 	// (returning false for a handle will skip this tag)
-	$vdoautomedic = apply_filters('automedic_style_check',$vhandle);
+	$vdoautomedic = apply_filters('automedic_style_check', $vhandle);
 	if (!$vdoautomedic) {return $vlink;}
 
 	$vstyle[$vautomedicstylenum] = $vlink;
-	$vstylekeys = automedic_extract_tag_attributes($vstyle,'style');
+	$vstylekeys = automedic_extract_tag_attributes($vstyle, 'style');
 
 	// skip tag if extraction failed
 	if (!is_array($vstylekeys)) {return $vlink;}
@@ -730,9 +723,10 @@ function automedic_process_style_tags($vlink,$vhandle) {
 	$vstylehref = $vstylekeys[$vautomedicstylenum]['href'];
 
 	// check tag for external stylesheet
+	// TODO: improve check for external stylesheet (strpos === 0)
 	$vexternal = false;
-	if ( (!stristr($vstylehref,$_SERVER['HTTP_HOST']))
-	  && ( (stristr($vstylehref,'http:')) || (stristr($vstylehref,'https:')) ) ) {
+	if ( (!stristr($vstylehref, $_SERVER['HTTP_HOST']))
+	  && ( (stristr($vstylehref, 'http:')) || (stristr($vstylehref, 'https:')) ) ) {
 	  	$visexternal = true;
 	}
 
@@ -745,9 +739,9 @@ function automedic_process_style_tags($vlink,$vhandle) {
 	$vimportexternal = get_option('automedic_import_external_styles');
 
 	if ($vimportexternal && $visexternal) {
-		$vnulink = automedic_rebuild_style_tag($vstylekeys,'style',$vautomedicstylenum,true);
+		$vnulink = automedic_rebuild_style_tag($vstylekeys, 'style', $vautomedicstylenum, true);
 	} else {
-		$vnulink = automedic_rebuild_style_tag($vstylekeys,'style',$vautomedicstylenum);
+		$vnulink = automedic_rebuild_style_tag($vstylekeys, 'style', $vautomedicstylenum);
 	}
 
 	$vautomedicstylenum++;
@@ -766,34 +760,34 @@ function automedic_process_style_tags($vlink,$vhandle) {
 
 // Extract Attribute Keys from Tag
 // -------------------------------
-function automedic_extract_tag_attributes($tagelements,$tag) {
+function automedic_extract_tag_attributes($tagelements, $tag) {
 
 	$vi = 0;
 	foreach ($tagelements as $element) {
 		$element = str_ireplace('</'.$tag.'>','',$element); // '>
 		$element = str_ireplace('<'.$tag,'',$element); // '>
 		$element = trim($element);
-		if (substr($element,-1) == '>') {$element = substr($element,0,strlen($element)-1);}
+		if (substr($element,-1) == '>') {$element = substr($element, 0, strlen($element)-1);}
 
 		// if has quotes, replace spaces inside them
-		if ( (strstr($element,'"')) || (strstr($element,"'")) ) {
+		if ( (strstr($element, '"')) || (strstr($element, "'")) ) {
 			// replace spaces inside double quotes with a placeholder
 			$tempelement = $element;
-			if (strstr($tempelement,'"')) {
-				while (strstr($tempelement,'"')) {
-					$pos = strpos($tempelement,'"') + 1;
-					$chunks = str_split($tempelement,$pos);
+			if (strstr($tempelement, '"')) {
+				while (strstr($tempelement, '"')) {
+					$pos = strpos($tempelement, '"') + 1;
+					$chunks = str_split($tempelement, $pos);
 					unset($chunks[0]);
-					$temp = implode('',$chunks);
+					$temp = implode('', $chunks);
 					if (strstr($temp,'"')) {
-						$pos = strpos($temp,'"');
-						$chunks = str_split($temp,$pos);
+						$pos = strpos($temp, '"');
+						$chunks = str_split($temp, $pos);
 						$inside = $chunks[0];
-						$nuinside = str_replace(' ','|---|',$inside);
+						$nuinside = str_replace(' ', '|---|', $inside);
 						// another important fix, replace = inside quotes!
-						$nuinside = str_replace('=','|-|-|',$nuinside);
-						$element = str_replace('"'.$inside.'"','"'.$nuinside.'"',$element);
-						$tempelement = str_replace('"'.$inside.'"','',$tempelement);
+						$nuinside = str_replace('=', '|-|-|', $nuinside);
+						$element = str_replace('"'.$inside.'"', '"'.$nuinside.'"', $element);
+						$tempelement = str_replace('"'.$inside.'"', '', $tempelement);
 					} else {continue;} // bug out for unclosed quotes
 					// TODO: better fix for unclosed quotes?
 					// ...but this is above and beyond the call of duty
@@ -801,21 +795,21 @@ function automedic_extract_tag_attributes($tagelements,$tag) {
 			}
 			// replace spaces inside single quotes with a placeholder
 			$tempelement = $element;
-			if (strstr($tempelement,"'")) {
-				while (strstr($tempelement,"'")) {
-					$pos = strpos($tempelement,"'") + 1;
-					$chunks = str_split($tempelement,$pos);
+			if (strstr($tempelement, "'")) {
+				while (strstr($tempelement, "'")) {
+					$pos = strpos($tempelement, "'") + 1;
+					$chunks = str_split($tempelement, $pos);
 					unset($chunks[0]);
-					$temp = implode('',$chunks);
-					if (strstr($temp,"'")) {
-						$pos = strpos($temp,"'");
-						$chunks = str_split($temp,$pos);
+					$temp = implode('', $chunks);
+					if (strstr($temp, "'")) {
+						$pos = strpos($temp, "'");
+						$chunks = str_split($temp, $pos);
 						$inside = $chunks[0];
-						$nuinside = str_replace(' ','|---|',$inside);
+						$nuinside = str_replace(' ', '|---|',$inside);
 						// another important fix, replace = inside quotes!
-						$nuinside = str_replace('=','|-|-|',$nuinside);
-						$element = str_replace("'".$inside."'","'".$nuinside."'",$element);
-						$tempelement = str_replace("'".$inside."'","",$tempelement);
+						$nuinside = str_replace('=', '|-|-|', $nuinside);
+						$element = str_replace("'".$inside."'", "'".$nuinside."'", $element);
+						$tempelement = str_replace("'".$inside."'", "", $tempelement);
 					} else {continue;} // bug out for unclosed quotes
 					// TODO: better fix for unclosed quotes?
 					// (this is above and beyond the call of duty tho)
@@ -824,34 +818,34 @@ function automedic_extract_tag_attributes($tagelements,$tag) {
 		}
 
 		// replace all other spaces not in quotes
-		$element = str_replace(" ","|||",$element);
+		$element = str_replace(" ", "|||", $element);
 
 		// print_r($element); // debug point
 
 		// split the tag string at our replaced spaces
-		if (strstr($element,'|||')) {$chunks = explode('|||',$element);}
-			else {$chunks[0] = $element;}
+		if (strstr($element,'|||')) {$chunks = explode('|||', $element);}
+		else {$chunks[0] = $element;}
 
 		// print_r($chunks); // debug point
 
 		foreach ($chunks as $chunk) {
 
-			if (strstr($chunk,'=')) {
-				$parts = explode('=',$chunk);
+			if (strstr($chunk, '=')) {
+				$parts = explode('=', $chunk);
 				$thiskey = trim($parts[0]);
 
 				$thisvalue = trim($parts[1]);
-				if ( (substr($thisvalue,0,1) == '"') && (substr($thisvalue,-1) == '"') ) {
-					$thisvalue = substr($thisvalue,1,strlen($vthisvalue)-1);
+				if ( (substr($thisvalue, 0, 1) == '"') && (substr($thisvalue, -1) == '"') ) {
+					$thisvalue = substr($thisvalue, 1, strlen($vthisvalue)-1);
 					// put back the spaces and = inside quotes
-					$thisvalue = str_replace('|---|',' ',$thisvalue);
-					$thisvalue = str_replace('|-|-|','=',$thisvalue);
+					$thisvalue = str_replace('|---|', ' ', $thisvalue);
+					$thisvalue = str_replace('|-|-|', '=', $thisvalue);
 				}
-				elseif ( (substr($thisvalue,0,1) == "'") && (substr($thisvalue,-1) == "'") ) {
-					$thisvalue = substr($thisvalue,1,strlen($vthisvalue)-1);
+				elseif ( (substr($thisvalue, 0, 1) == "'") && (substr($thisvalue, -1) == "'") ) {
+					$thisvalue = substr($thisvalue, 1, strlen($vthisvalue)-1);
 					// put back the spaces and = inside quotes
-					$thisvalue = str_replace('|---|',' ',$thisvalue);
-					$thisvalue = str_replace('|-|-|','=',$thisvalue);
+					$thisvalue = str_replace('|---|', ' ', $thisvalue);
+					$thisvalue = str_replace('|-|-|', '=', $thisvalue);
 				}
 				// special: fix case variations of to specific case version for later
 				if (strtolower($thiskey) == 'src') {$thiskey = 'src';}
@@ -872,18 +866,18 @@ function automedic_extract_tag_attributes($tagelements,$tag) {
 // Rebuild Style Tag from Extracted Keys
 // -------------------------------------
 // 1.4.0: separate stylesheet tag rebuild function
-function automedic_rebuild_style_tag($tagkeys,$tag,$vnum,$special=false) {
+function automedic_rebuild_style_tag($tagkeys, $tag, $vnum, $special=false) {
 
 	$nutag = '<'.$tag; 	// '>
 	foreach ($tagkeys[$vnum] as $key => $value) {
 		if ($value == '') {$nutag .= ' '.$key;}
-		elseif ( (stristr($key,'href')) && ($special) ) {
+		elseif ( (stristr($key, 'href')) && ($special) ) {
 			// for importing external stylesheets
 			$href = $value;
 		} else {
 			$useouterquote = '"';
 			// if (strstr($value,"'")) {$useouterquote = '"';}
-			if (strstr($value,'"')) {$useouterquote = "'";}
+			if (strstr($value, '"')) {$useouterquote = "'";}
 			$nutag .= ' '.$key.'='.$useouterquote.$value.$useouterquote;
 		}
 	}
@@ -899,9 +893,9 @@ function automedic_rebuild_style_tag($tagkeys,$tag,$vnum,$special=false) {
 // --------------------------
 // AutoMedic Test Page Output
 // --------------------------
-add_shortcode('automedic-test','automedic_test_html_shortcode_output');
+add_shortcode('automedic-test', 'automedic_test_shortcode_output');
 
-function automedic_test_html_shortcode_output() {
+function automedic_test_shortcode_output() {
 
 	// $output = '<!doctype html>';
 

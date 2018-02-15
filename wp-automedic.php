@@ -165,12 +165,24 @@ global $vautomedic; $vautomedic = get_option('wp_automedic');
 // 1.4.1: fixed and streamlined function
 function automedic_get_option($vkey,$vfilter=true) {
 	global $vautomedic;
+<<<<<<< HEAD
+	$vkey = str_replace('am_', '', $vkey);
+	if (isset($vautomedic[$vkey])) {
+		if ($vfilter) {return apply_filters('automedic_'.$vkey, $vvalue);}
+		else {return $vautomedic[$vkey];}
+	} else {
+		// 1.3.5: use default fallbacks
+		if ($vkey == 'images') {return automedic_get_defaults('images');}
+		if ($vkey == 'styles') {return automedic_get_defaults('styles');}
+		return '';
+=======
 	if (isset($vautomedic[$vkey])) {$vvalues = $vautomedic[$vkey];}
 	else {
 		// 1.3.5: added fallback to default settings
 		if ($vkey == 'images') {$vvalues = automedic_get_defaults('images');}
 		elseif ($vkey == 'styles') {$vvalues = automedic_get_defaults('styles');}
 		else {$vvalues = null;}
+>>>>>>> release/1.4.1
 	}
 	if ($vfilter) {$vvalues = apply_filters('automedic_'.$vkey, $vvalues);}
 	return $vvalues;
@@ -328,6 +340,10 @@ function automedic_settings_page() {
 
 	// Sidebar Floatbox
 	// ----------------
+<<<<<<< HEAD
+	// $vargs = array('am','wp-automedic','free','wp-automedic','','WP AutoMedic',$vautomedicversion);
+=======
+>>>>>>> release/1.4.1
 	$vargs = array('wp-automedic', 'yes'); // trimmed settings
 	if (function_exists('wqhelper_sidebar_floatbox')) {
 		wqhelper_sidebar_floatbox($vargs);
@@ -717,10 +733,17 @@ function automedic_process_style_tags($vlink, $vhandle) {
 	$vstylehref = $vstylekeys[$vautomedicstylenum]['href'];
 
 	// check tag for external stylesheet
+<<<<<<< HEAD
+	// TODO: improve check for external stylesheet (strpos === 0)
+	$vexternal = false;
+	if ( (!stristr($vstylehref, $_SERVER['HTTP_HOST']))
+	  && ( (stristr($vstylehref, 'http:')) || (stristr($vstylehref, 'https:')) ) ) {
+=======
 	// 1.4.1: improved check for external stylesheets
 	$vexternal = false;
 	if ( (strpos($vstylehref, $_SERVER['HTTP_HOST']) !== 0)
 	  && ( (strpos($vstylehref, 'http:') === 0) || (strpos($vstylehref, 'https:') === 0) ) ) {
+>>>>>>> release/1.4.1
 	  	$visexternal = true;
 	}
 

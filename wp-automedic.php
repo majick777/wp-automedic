@@ -4,7 +4,7 @@
 Plugin Name: WP AutoMedic
 Plugin URI: http://wordquest.org/plugins/wp-automedic/
 Description: Reloads broken images, stylesheets, scripts, iframes cross-browser with plain javascript. Reduce site load problems and bounce rates.
-Version: 1.4.0
+Version: 1.4.1
 Author: Tony Hayes
 Author URI: http://dreamjester.net
 @fs_premium_only pro-functions.php
@@ -23,12 +23,13 @@ if (!function_exists('add_action')) {exit;}
 // -----------------
 global $wordquestplugins, $vautomedicslug, $vautomedicversion;
 $vslug = $vautomedicslug = 'wp-automedic';
-$wordquestplugins[$vslug]['version'] = $vautomedicversion = '1.4.0';
+$wordquestplugins[$vslug]['version'] = $vautomedicversion = '1.4.1';
 $wordquestplugins[$vslug]['title'] = 'WP AutoMedic';
 $wordquestplugins[$vslug]['namespace'] = 'automedic';
 $wordquestplugins[$vslug]['settings'] = 'am';
 $wordquestplugins[$vslug]['hasplans'] = false;
-// $wordquestplugins[$vslug]['wporgslug'] = 'wp-automedic';
+// 1.4.1: added confirmed wordpress.org slug
+$wordquestplugins[$vslug]['wporgslug'] = 'wp-automedic';
 
 // ------------------------
 // Check for Update Checker
@@ -66,11 +67,19 @@ function automedic_freemius($vslug) {
 	}
 
     if (!isset($automedic_freemius)) {
-        if (!class_exists('Freemius')) {require_once(dirname(__FILE__).'/freemius/start.php');}
 
+        // start the Freemius SDK
+        if (!class_exists('Freemius')) {
+        	$vfreemiuspath = dirname(__FILE__).'/freemius/start.php';
+        	if (!file_exists($vfreemiuspath)) {return;}
+        	require_once($vfreemiuspath);
+        }
+
+		// 1.4.1: added type plugin to settings
 		$automedic_settings = array(
             'id'                => '141',
             'slug'              => $vslug,
+            'type'				=> 'plugin',
             'public_key'        => 'pk_443cc309c3298fe00933e523b38c8',
             'is_premium'        => $vpremium,
             'has_addons'        => false,
@@ -79,7 +88,7 @@ function automedic_freemius($vslug) {
             'menu'              => array(
                 'slug'       	=> $vslug,
                 'first-path' 	=> 'admin.php?page='.$vslug.'&welcome=true',
-                'parent'		=> array('slug'=>'wordquest'),
+                'parent'		=> array('slug' => 'wordquest'),
                 'contact'		=> $vpremium,
                 // 'support'    => false,
                 // 'account'    => false,
@@ -108,7 +117,7 @@ if ( (is_object($automedic_freemius)) && (method_exists($automedic_freemius,'add
 // ---------------
 // Add Admin Pages
 // ---------------
-add_action('admin_menu','automedic_settings_menu',1);
+add_action('admin_menu', 'automedic_settings_menu', 1);
 function automedic_settings_menu() {
 
 	// maybe add Wordquest top level menu
@@ -153,8 +162,10 @@ global $vautomedic; $vautomedic = get_option('wp_automedic');
 
 // get a Plugin Setting
 // --------------------
+// 1.4.1: fixed and streamlined function
 function automedic_get_option($vkey,$vfilter=true) {
 	global $vautomedic;
+<<<<<<< HEAD
 	$vkey = str_replace('am_', '', $vkey);
 	if (isset($vautomedic[$vkey])) {
 		if ($vfilter) {return apply_filters('automedic_'.$vkey, $vvalue);}
@@ -164,7 +175,17 @@ function automedic_get_option($vkey,$vfilter=true) {
 		if ($vkey == 'images') {return automedic_get_defaults('images');}
 		if ($vkey == 'styles') {return automedic_get_defaults('styles');}
 		return '';
+=======
+	if (isset($vautomedic[$vkey])) {$vvalues = $vautomedic[$vkey];}
+	else {
+		// 1.3.5: added fallback to default settings
+		if ($vkey == 'images') {$vvalues = automedic_get_defaults('images');}
+		elseif ($vkey == 'styles') {$vvalues = automedic_get_defaults('styles');}
+		else {$vvalues = null;}
+>>>>>>> release/1.4.1
 	}
+	if ($vfilter) {$vvalues = apply_filters('automedic_'.$vkey, $vvalues);}
+	return $vvalues;
 }
 
 // get Defaults Settings
@@ -302,8 +323,7 @@ function automedic_update_options() {
 // -------------
 function automedic_settings_page() {
 
-	// TODO: Special Options
-	// Import External Stylesheets? (automedic_import_external_styles)
+	// TODO: Import External Stylesheets Option? (automedic_import_external_styles)
 
 	// 1.4.0: use global plugin option
 	global $vautomedic, $vautomedicversion;
@@ -320,7 +340,10 @@ function automedic_settings_page() {
 
 	// Sidebar Floatbox
 	// ----------------
+<<<<<<< HEAD
 	// $vargs = array('am','wp-automedic','free','wp-automedic','','WP AutoMedic',$vautomedicversion);
+=======
+>>>>>>> release/1.4.1
 	$vargs = array('wp-automedic', 'yes'); // trimmed settings
 	if (function_exists('wqhelper_sidebar_floatbox')) {
 		wqhelper_sidebar_floatbox($vargs);
@@ -334,19 +357,6 @@ function automedic_settings_page() {
 		jQuery("#wrapbox").css("width",newwidth+"px");
 		jQuery("#adminnoticebox").css("width",newwidth+"px");
 		</script>';
-
-		// $vfloatmenuscript = wqhelper_sidebar_floatmenuscript(); echo $vfloatmenuscript;
-		// echo '<script language="javascript" type="text/javascript">
-		// floatingMenu.add("floatdiv", {targetRight: 10, targetTop: 20, centerX: false, centerY: false});
-		// function move_upper_right() {
-		//	floatingArray[0].targetTop=20;
-		//	floatingArray[0].targetBottom=undefined;
-		//	floatingArray[0].targetLeft=undefined;
-		//	floatingArray[0].targetRight=10;
-		//	floatingArray[0].centerX=undefined;
-		//	floatingArray[0].centerY=undefined;
-		// }
-		// move_upper_right();</script>';
 	}
 
 	// Admin Notices Boxer
@@ -500,7 +510,7 @@ function automedic_settings_page() {
 	echo "<input class='button-primary' type='submit' value='".__('Update Options','wp-automedic')."'>";
 	echo "</td></tr>";
 
-	echo "</table></form><br>";
+	echo "</table></form><br>"; // close table form
 
 	echo '</div></div>'; // close #wrapbox
 
@@ -527,8 +537,8 @@ function automedic_enqueue_script() {
 	$vimages = automedic_get_option('images');
 	$vstyles = automedic_get_option('styles');
 
-	// $vdeps = array('jquery'); // jquery dependency not needed
-	$vdeps = array(); // javascript only is needed
+	// $vdeps = array('jquery'); // jquery dependency no longer needed
+	$vdeps = array(); // javascript only is needed now
 
 	// set version as current time to avoid caching
 	// 1.4.0: set to settings save time for efficiency
@@ -626,7 +636,7 @@ function automedic_script_variables() {
 		echo " var amStyleDebug = '".$vstyles['debug']."';";
 	}  else {echo " var amStyleReload = '0';";}
 
-	// 1.4.0: maybe output javascript variable for pro version
+	// 1.4.0: maybe output javascript variables for pro version
 	if (function_exists('automedic_pro_script_variables')) {automedic_pro_script_variables($vcontext);}
 
 }
@@ -680,7 +690,7 @@ if ( ($vautomedic['switch']) && ($vautomedic['selfcheck']) ) {
 
 // Process Wordpress Style Tags
 // ----------------------------
-// 1.4.0: convert to init action
+// 1.4.0: converted to init action
 add_action('init', 'automedic_check_style_reload');
 function automedic_check_style_reload() {
 
@@ -723,10 +733,17 @@ function automedic_process_style_tags($vlink, $vhandle) {
 	$vstylehref = $vstylekeys[$vautomedicstylenum]['href'];
 
 	// check tag for external stylesheet
+<<<<<<< HEAD
 	// TODO: improve check for external stylesheet (strpos === 0)
 	$vexternal = false;
 	if ( (!stristr($vstylehref, $_SERVER['HTTP_HOST']))
 	  && ( (stristr($vstylehref, 'http:')) || (stristr($vstylehref, 'https:')) ) ) {
+=======
+	// 1.4.1: improved check for external stylesheets
+	$vexternal = false;
+	if ( (strpos($vstylehref, $_SERVER['HTTP_HOST']) !== 0)
+	  && ( (strpos($vstylehref, 'http:') === 0) || (strpos($vstylehref, 'https:') === 0) ) ) {
+>>>>>>> release/1.4.1
 	  	$visexternal = true;
 	}
 
@@ -746,7 +763,7 @@ function automedic_process_style_tags($vlink, $vhandle) {
 
 	$vautomedicstylenum++;
 
-	// TODO: revalidate the final tag again just in case?
+	// TODO: revalidate the final tag again (just in case?)
 	// print_r($vnulink); // debug point
 
 	return $vnulink;
@@ -790,7 +807,7 @@ function automedic_extract_tag_attributes($tagelements, $tag) {
 						$tempelement = str_replace('"'.$inside.'"', '', $tempelement);
 					} else {continue;} // bug out for unclosed quotes
 					// TODO: better fix for unclosed quotes?
-					// ...but this is above and beyond the call of duty
+					// ...but this is way above and beyond the call of duty
 				}
 			}
 			// replace spaces inside single quotes with a placeholder
@@ -812,7 +829,6 @@ function automedic_extract_tag_attributes($tagelements, $tag) {
 						$tempelement = str_replace("'".$inside."'", "", $tempelement);
 					} else {continue;} // bug out for unclosed quotes
 					// TODO: better fix for unclosed quotes?
-					// (this is above and beyond the call of duty tho)
 				}
 			}
 		}
@@ -933,4 +949,3 @@ Alternate StyleSheet<br>
 	return $output;
 }
 
-?>

@@ -1,15 +1,16 @@
-
+/* ------------------ */
 /* AutoMedic Reloader */
+/* ------------------ */
 
 /* note to javascript gurus: help is very welcome! I have mostly used javascript
 // for user interfaces, not for heavy lifting like this, that said, it works. ;-)
 // but need as many feedbacks, failbacks and fallbacks as we can get, lol. */
 
-/* TODO: allow for querystring overrides?
-/* TODO: add a local stylesheet fallback cache? */
-/* TODO: add an option to reload external images or not? */
-/* TODO: activate image fallback cache once it is secure */
-
+/* Development TODO List
+/* - allow for querystring overrides ? */
+/* - add a local stylesheet fallback cache ? */
+/* - add an option to reload external images or not ? */
+/* - activate image fallback cache if/when it is secure */
 
 /* External Resource Checker */
 function amIsExternal(url) {
@@ -41,9 +42,12 @@ function amCacheBust(resourceurl) {
 	return newurl;
 }
 
-
+/* ========= */
 /* AutoMedic */
+/* ========= */
 function AutoMedic() {
+
+	if (typeof amImageReload == undefined) {return;}
 
 	/* Image Reloader
 	// --------------
@@ -103,7 +107,7 @@ function AutoMedic() {
 				/* attempt a simple image reload */
 				amImages[amImageNum].src = 'javascript:void(0);';
 				amImages[amImageNum].src = amCacheBust(amImageSrc[amImageNum]);
-				console.log('Reloaded Image '+amImageNum+': '+amImages[amImageNum].src);
+				if (amImageDebug) {console.log('Reloaded Image '+amImageNum+': '+amImages[amImageNum].src);}
 
 				/* start the reload cycle */
 				if (amImageCycling == '1') {amImageReloadCycle(amImageNum);}
@@ -148,7 +152,7 @@ function AutoMedic() {
 						/* attempt a reload */
 						amImages[amImageNum].src = 'javascript:void(0);';
 						amImages[amImageNum].src = amCacheBust(amImageSrc[amImageNum]);
-						console.log('Reloaded Image '+amImageNum+': '+amImages[amImageNum].src);
+						if (amImageDebug) {console.log('Reloaded Image '+amImageNum+': '+amImages[amImageNum].src);}
 						amImageTries[amImageNum] = amImageTries[amImageNum] + 1;
 						return;
 					}
@@ -339,7 +343,7 @@ function AutoMedic() {
 					stylesheet = ''; nocssrules = ''; norules = ''; zerorules = '';
 					stylesheethref = amStyleSrc[amStyleNum];
 					thislink = amStyleLinks[amStyleNum];
-					console.log('Stylesheet '+amStyleNum+' URL: '+stylesheethref);
+					if (amStyledDebug) {console.log('Stylesheet '+amStyleNum+' URL: '+stylesheethref);}
 
 					/* Check Stylesheets */
 

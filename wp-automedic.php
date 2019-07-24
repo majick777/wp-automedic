@@ -4,7 +4,7 @@
 Plugin Name: WP AutoMedic
 Plugin URI: http://wpmedic.tech/wp-automedic/
 Description: Reloads broken images and stylesheets cross-browser with plain javascript. Reduces site load problems and visitor bounce rates.
-Version: 1.5.0
+Version: 1.5.1
 Author: WP Medic
 Author URI: http://wpmedic.tech
 GitHub Plugin URI: majick777/wp-automedic
@@ -551,28 +551,32 @@ function automedic_script_variables() {
 // ---------------
 // Self Load Check
 // ---------------
-if ( ($automedic['switch']) && ($automedic['selfcheck']) ) {
+// 1.5.1: fix for undefined variable in global scope
+add_action('init', 'automedic_self_checks');
+function automedic_self_checks() {
+	if ( ($automedic['switch']) && ($automedic['selfcheck']) ) {
 
-	add_action('wp_footer', 'automedic_self_load_check',99);
-	// 1.4.0: add admin_footer action for backend self check
-	add_action('admin_footer', 'automedic_self_load_check',99);
+		add_action('wp_footer', 'automedic_self_load_check', 99);
+		// 1.4.0: add admin_footer action for backend self check
+		add_action('admin_footer', 'automedic_self_load_check', 99);
 
-	function automedic_self_load_check() {
+		function automedic_self_load_check() {
 
-		// 1.4.0: check/use enqueued script URL global
-		global $automedic; if (!$automedic['script']) {return;}
+			// 1.4.0: check/use enqueued script URL global
+			global $automedic; if (!$automedic['script']) {return;}
 
-		// 1.4.0: manually append current time for cachebusting
-		// 1.4.5: use of add_query_arg here
-		$automedic['script'] = add_query_arg('version', time(), $automedic['script']);
+			// 1.4.0: manually append current time for cachebusting
+			// 1.4.5: use of add_query_arg here
+			$automedic['script'] = add_query_arg('version', time(), $automedic['script']);
 
-		// so much simpler to check than for dynamic scripts,
-		// as we actually know a function name to test for..!
-		echo "<script>if (typeof amCacheBust != 'function') {".PHP_EOL;
-		echo "	ams = document.createElement('script');".PHP_EOL;
-		echo "	ams.src = '".$automedic['script']."';".PHP_EOL;
-		echo "	document.body.appendChild(ams);".PHP_EOL;
-		echo "}</script>".PHP_EOL;
+			// so much simpler to check than for dynamic scripts,
+			// as we actually know a function name to test for..!
+			echo "<script>if (typeof amCacheBust != 'function') {".PHP_EOL;
+			echo "	ams = document.createElement('script');".PHP_EOL;
+			echo "	ams.src = '".$automedic['script']."';".PHP_EOL;
+			echo "	document.body.appendChild(ams);".PHP_EOL;
+			echo "}</script>".PHP_EOL;
+		}
 	}
 }
 

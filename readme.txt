@@ -5,7 +5,7 @@ Tags: automedic, medic, reload, refresh, regenerate, heal, images, css, styleshe
 Author URI: http://dreamjester.net
 Plugin URI: http://wpmedic.tech/wp-automedic/
 Requires at least: 3.0.0
-Tested up to: 4.9.10
+Tested up to: 5.2.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -276,6 +276,12 @@ settings the resource will then be found and loaded. eg:
 
 == Changelog ==
 
+= 1.5.1 =
+* fix to self check variable in global scope
+* update to Plugin Loader 1.0.7
+* update to WordQuest Helper 1.7.5
+* update to Freemius SDK 2.3.0
+
 = 1.5.0 =
 * updated to use new plugin loader class
 * update to WordQuest Helper 1.7.4
@@ -342,7 +348,8 @@ settings the resource will then be found and loaded. eg:
 [WP AutoMedic Home](http://wordquest.org/plugins/wp-automedic/)
 
 Like this plugin? Check out more of our free plugins here: 
-[WordQuest](http://wordquest.org/plugins/ "WordQuest Plugins")
+[WP Medic Tools](http://wpmedic.tech/ "WP Medic Tools")
+[WordQuest Plugins](http://wordquest.org/plugins/ "WordQuest Plugins")
 
 Looking for an awesome theme? Check out my child theme framework:
 [BioShip Child Theme Framework](http://bioship.space "BioShip Child Theme Framework")

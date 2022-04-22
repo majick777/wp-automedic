@@ -4,7 +4,7 @@
 Plugin Name: WP AutoMedic
 Plugin URI: http://wpmedic.tech/wp-automedic/
 Description: Reloads broken images and stylesheets cross-browser with plain javascript. Reduces site load problems and visitor bounce rates.
-Version: 1.5.2
+Version: 1.5.3
 Author: WP Medic
 Author URI: http://wpmedic.tech
 GitHub Plugin URI: majick777/wp-automedic

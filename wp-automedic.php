@@ -672,18 +672,21 @@ function automedic_enqueue_script() {
 	// 1.4.0: maybe just enqueue the reloader javascript now
 	// 1.4.2: remove the -reloader suffix from script handle
 	if ( $automedic['script'] ) {
-		wp_enqueue_script( 'automedic', $automedic['script'], array(), $ver );
+		// 1.5.3: defer javascript loading to footer
+		wp_enqueue_script( 'automedic', $automedic['script'], array(), $ver, true );
 
 		// --- add script variables in footer ---
-		// 1.5.0: added these actions here ---
-		add_action( 'wp_footer', 'automedic_script_variables' );
-		add_action( 'admin_footer', 'automedic_script_variables' );
+		// 1.5.0: added these actions here
+		// 1.5.3: remove actions and add script inline
+		$js = automedic_script_variables();
+		wp_add_inline_script( 'automedic', $js, 'before' );
 	}
 }
 
 // --------------------
 // Set Script Variables
 // --------------------
+// 1.5.3: return javascript instead of echoing directly
 function automedic_script_variables() {
 
 	// 1.4.5: set context array for easy checking
@@ -710,20 +713,20 @@ function automedic_script_variables() {
 	// ----------------
 	global $automedic;
 
-	echo "<script>";
-	echo "/* WP AutoMedic " . esc_js( $automedic['version'] ) . " - " . esc_url( $automedic['home'] ) . " */" . PHP_EOL;
-	echo "var am = {}; am.images = {}; am.styles = {}; am.imagedata = {}; am.styledata = {};" . PHP_EOL;
+	// echo "<script>";
+	$js = "/* WP AutoMedic " . esc_js( $automedic['version'] ) . " - " . esc_url( $automedic['home'] ) . " */" . PHP_EOL;
+	$js .=	"var am = {}; am.images = {}; am.styles = {}; am.imagedata = {}; am.styledata = {};" . PHP_EOL;
 
 	// Set Site URL for external checks
 	// --------------------------------
 	$sitehost = $_SERVER['HTTP_HOST'];
-	echo "am.sitehost = '" . esc_url( $sitehost ) . "'; ";
+	$js .= "am.sitehost = '" . esc_url( $sitehost ) . "'; ";
 
 	// Set Admin AJAX URL
 	// ------------------
 	// note: only needed for caching (which is not implemented yet)
 	$adminajaxurl = admin_url( 'admin-ajax.php' );
-	echo "am.ajaxurl = '" . esc_url( $adminajaxurl ) . "'; ";
+	$js .= "am.ajaxurl = '" . esc_url( $adminajaxurl ) . "'; ";
 
 	// Output Config Variables
 	// -----------------------
@@ -736,29 +739,20 @@ function automedic_script_variables() {
 			$imagecycling = '1';
 		}
 
-		/* echo " var amImageReload = 1;";
-		echo " var amImageCycling = ".$imagecycling.";";
-		echo " var amImageCycles = ".$images['cycle'].";";
-		echo " var amImageDelay = ".$images['delay'].";";
-		echo " var amImageAttempts = ".$images['attempts'].";";
-		echo " var amImageExternal = ".$images['external'].";";
-		echo " var amImageCache = ".$images['cache'].";";
-		echo " var amImageDebug = ".$images['debug'].";"; */
-
 		// 1.5.0: removed single quotes from all values
 		// 1.5.2: use global javascript settings object
-		echo " am.images.reload = 1;";
-		echo " am.images.cycling = " . esc_js( $imagecycling ) . ";";
-		echo " am.images.cycle = " . esc_js( $images['cycle'] ) . ";";
-		echo " am.images.delay = " . esc_js( $images['delay'] ) . ";";
-		echo " am.images.attempts = " . esc_js( $images['attempts'] ) . ";";
-		echo " am.images.external = " . esc_js( $images['external'] ) . ";";
-		echo " am.images.cache = " . esc_js( $images['cache'] ) . ";";
-		echo " am.images.debug = " . esc_js( $images['debug'] ) . ";";
+		$js .= " am.images.reload = 1;";
+		$js .= " am.images.cycling = " . esc_js( $imagecycling ) . ";";
+		$js .= " am.images.cycle = " . esc_js( $images['cycle'] ) . ";";
+		$js .= " am.images.delay = " . esc_js( $images['delay'] ) . ";";
+		$js .= " am.images.attempts = " . esc_js( $images['attempts'] ) . ";";
+		$js .= " am.images.external = " . esc_js( $images['external'] ) . ";";
+		$js .= " am.images.cache = " . esc_js( $images['cache'] ) . ";";
+		$js .= " am.images.debug = " . esc_js( $images['debug'] ) . ";";
 
 	} else {
 		// echo " var amImageReload = 0;";
-		echo " am.images.reload = 0;";
+		$js .= " am.images.reload = 0;";
 	}
 
 	if ( in_array( $styles['reload'], $contexts ) ) {
@@ -768,37 +762,28 @@ function automedic_script_variables() {
 			$stylecycling = '1';
 		}
 
-		/* echo " var amStyleReload = 1;";
-		echo " var amStyleCycling = ".$stylecycling.";";
-		echo " var amStyleCycles = ".$styles['cycle'].";";
-		echo " var amStyleDelay = ".$styles['delay'].";";
-		echo " var amStyleAttempts = ".$styles['attempts'].";";
-		echo " var amStyleExternal = ".$styles['external'].";";
-		echo " var amStyleCache = ".$styles['cache'].";";
-		echo " var amStyleDebug = ".$styles['debug'].";"; */
-
 		// 1.5.0: removed single quotes from values
 		// 1.5.2: use global javascript settings object
-		echo " am.styles.reload = 1;";
-		echo " am.styles.cycling = " . esc_js( $stylecycling ) . ";";
-		echo " am.styles.cycle = " . esc_js( $styles['cycle'] ) . ";";
-		echo " am.styles.delay = " . esc_js( $styles['delay'] ) . ";";
-		echo " am.styles.attempts = " . esc_js( $styles['attempts'] ) . ";";
-		echo " am.styles.external = " . esc_js( $styles['external'] ) . ";";
-		echo " am.styles.cache = " . esc_js( $styles['cache'] ) . ";";
-		echo " am.styles.debug = " . esc_js( $styles['debug'] ) . ";";
+		$js .= " am.styles.reload = 1;";
+		$js .= " am.styles.cycling = " . esc_js( $stylecycling ) . ";";
+		$js .= " am.styles.cycle = " . esc_js( $styles['cycle'] ) . ";";
+		$js .= " am.styles.delay = " . esc_js( $styles['delay'] ) . ";";
+		$js .= " am.styles.attempts = " . esc_js( $styles['attempts'] ) . ";";
+		$js .= " am.styles.external = " . esc_js( $styles['external'] ) . ";";
+		$js .= " am.styles.cache = " . esc_js( $styles['cache'] ) . ";";
+		$js .= " am.styles.debug = " . esc_js( $styles['debug'] ) . ";";
 
 	}  else {
 		// echo " var amStyleReload = 0;";
-		echo " am.styles.reload = 0;";
+		$js .= " am.styles.reload = 0;";
 	}
 
 	// 1.4.0: maybe output javascript variables for pro version
 	// 1.5.2: simplified to use action hook
-	do_action( 'automedic_script_variables', $contexts );
+	// 1.5.3: use apply_filters instead of do_action
+	$js = apply_filters( 'automedic_script_variables', $js, $contexts );
 
-	echo "</script>" . PHP_EOL;
-
+	return $js;
 }
 
 // ---------------

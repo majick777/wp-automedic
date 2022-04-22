@@ -1,12 +1,12 @@
 === WP AutoMedic ===
 Contributors: majick
-Donate link: http://wordquest.org/contribute/?plugin=wp-automedic
+Donate link: https://wordquest.org/contribute/?plugin=wp-automedic
 Tags: automedic, medic, reload, refresh, regenerate, heal, images, css, stylesheets, script, resources, fix, broken, automatic, automattic
-Author URI: http://dreamjester.net
-Plugin URI: http://wpmedic.tech/wp-automedic/
+Author URI: https://dreamjester.net
+Plugin URI: https://wpmedic.tech/wp-automedic/
 Requires at least: 3.0.0
-Tested up to: 5.2.2
-Stable tag: trunk
+Tested up to: 5.9.3
+Stable tag: 5.9.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,8 +18,8 @@ You spend ages to get everything working on your site, BUT then, it can still br
 
 WP AutoMedic attempts to solve this problem by checking each resource on the page, whether it is an image or stylesheet or script, and reloading ONLY those resources that failed to load. While it won't fix typos pointing to resources which don't exist, it will at least try again (and as many times as you set it to) so that the webpage display can "heal itself" automatically (or rather, automedically!) in the majority of cases - mostly for slow or temporarily bad connections - without your site visitor having to hit the refresh button and start all over again!
 
-[WP AutoMedic Home](http://wpmedic.tech/wp-automedic/)
-[Support Forum](http://wordquest.org/support/wp-automedic/)
+[WP AutoMedic Home](https://wpmedic.tech/wp-automedic/)
+[Support Forum](https://wordquest.org/support/wp-automedic/)
 
 = So what? What's in it for me? =
 
@@ -63,8 +63,8 @@ Not Working yet (workarounds in progress) for:
 
 Of course other alternatives and workarounds are being explored, and suggestions and contributions are very welcome! It would be nice to improve WP AutoMedic to cover more situations and be tested and improved for different browsers.
 
-[WP AutoMedic Home](http://wpmedic.tech/wp-automedic/)
-[Support Forum](http://wordquest.org/support/wp-automedic/)
+[WP AutoMedic Home](https://wpmedic.tech/wp-automedic/)
+[Support Forum](https://wordquest.org/support/wp-automedic/)
 
 
 == Installation ==
@@ -275,6 +275,12 @@ settings the resource will then be found and loaded. eg:
 
 == Changelog ==
 
+= 1.5.3 =
+* update to Plugin Panel 1.2.2
+* update to Freemius SDK 2.4.3
+* load javascript in footer by default
+* fix to load javascript settings inline
+
 = 1.5.2 =
 * update to Plugin Loader 1.1.8
 * update to WordQuest Helper 1.7.8
@@ -354,26 +360,26 @@ settings the resource will then be found and loaded. eg:
 
 == Other Notes ==
 
-[WP AutoMedic Home](http://wordquest.org/plugins/wp-automedic/)
+[WP AutoMedic Home](https://wordquest.org/plugins/wp-automedic/)
 
 Like this plugin? Check out more of our free plugins here: 
-[WP Medic Tools](http://wpmedic.tech/ "WP Medic Tools")
-[WordQuest Plugins](http://wordquest.org/plugins/ "WordQuest Plugins")
+[WP Medic Tools](https://wpmedic.tech/ "WP Medic Tools")
+[WordQuest Plugins](https://wordquest.org/plugins/ "WordQuest Plugins")
 
 Looking for an awesome theme? Check out my child theme framework:
-[BioShip Child Theme Framework](http://bioship.space "BioShip Child Theme Framework")
+[BioShip Child Theme Framework](https://bioship.space "BioShip Child Theme Framework")
 
 = Support = 
 For support or if you have an idea to improve this plugin:
-[WP AutoMedic Support](http://wordquest.org/support/wp-automedic/ "WP AutoMedic Support Quests")
+[WP AutoMedic Support](https://wordquest.org/support/wp-automedic/ "WP AutoMedic Support Quests")
 
 = Contribute = 
 Help fund support, improvements and log priority feature requests by a gift of appreciation:
-[Contribute to WP AutoMedic](http://wordquest.org/contribute/?plugin=wp-automedic)
+[Contribute to WP AutoMedic](https://wordquest.org/contribute/?plugin=wp-automedic)
 
 = Development =
 To aid directly in development, please fork on Github and do a pull request:
-[WP AutoMedic on Github](http://github.com/majick777/wp-automedic/)
+[WP AutoMedic on Github](https://github.com/majick777/wp-automedic/)
 
 = Limitations =
 * External stylesheets cannot be checked initially

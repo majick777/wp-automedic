@@ -1362,7 +1362,7 @@ if ( !class_exists( 'automedic_loader' ) ) {
 			if ( !isset( $args['freemius_id'] ) || !isset( $args['freemius_key'] ) ) {
 				return;
 			}
-			
+
 			// --- check for free / premium plan ---
 			// convert plan string value of 'free' or 'premium' to boolean premium switch
 			// TODO: check for active addons also ?
@@ -1585,6 +1585,7 @@ if ( !class_exists( 'automedic_loader' ) ) {
 		// -----------------
 		// Plugin Page Links
 		// -----------------
+		// 1.2.2: merge in plugin links instead of using array_unshift
 		public function plugin_links( $links, $file ) {
 
 			$args = $this->args;
@@ -1593,11 +1594,11 @@ if ( !class_exists( 'automedic_loader' ) ) {
 				// --- add settings link ---
 				// 1.1.1: fix to settings page link URL
 				// (depending on whether top level menu or Settings submenu item)
-				$page = 'options-general.php';
-				if ( $this->menu_added ) {$page = 'admin.php';}
+				$page = $this->menu_added ? 'admin.php' : 'options-general.php';
 				$settings_url = add_query_arg( 'page', $args['slug'], admin_url( $page ) );
 				$settings_link = "<a href='" . esc_url( $settings_url ) . "'>" . esc_html( __( 'Settings' ) ) . "</a>";
-				array_unshift( $links, $settings_link );
+				$link = array( 'settings' => $settings_link );
+				$links = array_merge( $link, $links );
 
 				// --- maybe add Pro upgrade link ---
 				if ( isset( $args['hasplans'] ) && $args['hasplans'] ) {
@@ -1614,14 +1615,16 @@ if ( !class_exists( 'automedic_loader' ) ) {
 							$upgrade_target = !strstr( $upgrade_url, '/wp-admin/' ) ? ' target="_blank"' : '';
 						}
 						$upgrade_link = "<b><a href='" . esc_url( $upgrade_url ) . "'" . $upgrade_target . ">" . esc_html( __('Upgrade' ) ) . "</a></b>";
-						array_unshift( $links, $upgrade_link );
+						$link = array( 'upgrade' => $upgrade_link );
+						$links = array_merge( $link, $links );
 
 						// --- external pro link ---
 						// 1.2.0: added separate pro details link
 						if ( isset( $args['pro_link'] ) ) {
 							$pro_target = !strstr( $args['pro_link'], '/wp-admin/' ) ? ' target="_blank"' : '';
 							$pro_link = "<b><a href='" . esc_url( $args['pro_link'] ) . "'" . $pro_target . ">" . esc_html( __('Pro Details' ) ) . "</a></b>";
-							array_unshift( $links, $pro_link );
+							$link = array( 'pro-details' => $pro_link );
+							$links = array_merge( $link, $links );
 						}
 					}
 				}
@@ -1634,8 +1637,13 @@ if ( !class_exists( 'automedic_loader' ) ) {
 						$addons_url = $args['addons_link'];
 						$addons_target = !strstr( $addons_url, '/wp-admin/' ) ? ' target="_blank"' : '';
 						$addons_link = "<a href='" . esc_url( $addons_url )."'" . $addons_target . ">" . esc_html( __( 'Add Ons' ) ) . "</a>";
-						array_unshift( $links, $addons_link );
+						$link = array( 'addons' => $addons_link );
+						$links = array_merge( $link, $links );
 					}
+				}
+
+				if ( $this->debug ) {
+					echo '<span style="display:none;">Plugin Links for ' . $file . ': ' . print_r( $links, true )  . '</span>';
 				}
 			}
 
@@ -1677,7 +1685,7 @@ if ( !class_exists( 'automedic_loader' ) ) {
 			if ( $args['slug'] != substr( $_REQUEST['page'], 0, strlen( $args['slug'] ) ) ) {
 				return;
 			}
-			
+
 			// 1.2.2: bug out if adminsanity notices are loaded
 			if ( isset( $GLOBALS['automedic_data']['load']['notices'] ) && $GLOBALS['automedic_data']['load']['notices'] ) {
 				return;
@@ -1947,7 +1955,8 @@ if ( !class_exists( 'automedic_loader' ) ) {
 			} else {
 				// --- maybe output welcome message ---
 				if ( isset( $_REQUEST['welcome'] ) && ( 'true' == $_REQUEST['welcome'] ) ) {
-					if ( isset( $args['welcome'] ) ) {
+					// 1.2.3: skip output if welcome message argument is empty
+					if ( isset( $args['welcome'] ) && ( '' != $args['welcome'] ) ) {
 						echo '<tr><td colspan="3" align="center">';
 						echo $this->message_box( $args['welcome'], false );
 						echo '</td></tr>';
@@ -2244,6 +2253,16 @@ if ( !class_exists( 'automedic_loader' ) ) {
 			// --- close settings form ---
 			echo "</form>";
 
+			// --- enqueue settings resources ---
+			$this->settings_resources( $enqueued_media, $enqueued_color_picker );
+		}
+
+		// ------------------
+		// Settings Resources
+		// ------------------
+		// 1.2.3: added for standalone enqueueing of resources from table
+		function settings_resources( $media = true, $color_picker = true ) {
+
 			// --- number input step script ---
 			// 1.0.9: added to script array
 			// 1.1.8: fix to check for no mix or max value
@@ -2259,7 +2278,7 @@ if ( !class_exists( 'automedic_loader' ) ) {
 
 			// --- image selection script ---
 			// 1.1.7: added for image field type
-			if ( $enqueued_media ) {
+			if ( $media ) {
 				$confirm_remove = __( 'Are you sure you want to remove this image?' );
 				$script = "jQuery(function(){
 
@@ -2311,7 +2330,7 @@ if ( !class_exists( 'automedic_loader' ) ) {
 			}
 
 			// --- color picker script ---
-			if ( $enqueued_color_picker ) {
+			if ( $color_picker ) {
 				$script = "jQuery(document).ready(function(){
 					if (jQuery('.color-picker').length) {jQuery('.color-picker').wpColorPicker();}
 				});";
@@ -2841,7 +2860,8 @@ if ( !class_exists( 'automedic_loader' ) ) {
 
 			// --- plugin header styles ---
 			// 1.2.0: moved from plugin header section
-			$styles[] = '.pluginlink {text-decoration:none;}';
+			// 1.2.3: remove underline from plugin icon spans
+			$styles[] = '.pluginlink, .pluginlink span {text-decoration:none;}';
 			$styles[] = '.smalllink {font-size:11px;}';
 			$styles[] = '.readme:hover {text-decoration:underline;}';
 
@@ -3149,6 +3169,18 @@ if ( !function_exists( 'automedic_load_prefixed_functions' ) ) {
 			}
 		}
 
+		// ------------------
+		// Settings Resources
+		// ------------------
+		// 1.2.3: added for separate enqueueing of resources from table
+		if ( !function_exists( 'automedic_settings_resources' ) ) {
+			function automedic_settings_resources() {
+				$namespace = automedic_get_namespace_from_function( __FUNCTION__ );
+				$instance = $GLOBALS[$namespace . '_instance'];
+				$instance->settings_resources();
+			}
+		}
+
 	}
 }
 
@@ -3204,7 +3236,13 @@ if ( !function_exists( 'automedic_load_prefixed_functions' ) ) {
 // CHANGELOG
 // =========
 
+// == 1.2.3 ==
+// - added separate enqueueing of settings resources
+// - remove underline from plugin link icon spans
+// - skip welcome message output if empty
+
 // == 1.2.2 ==
+// - merge in plugin links instead of using array_unshift
 // - update plugin repository rating URL
 // - remove duplication of addons link
 // - no notice boxer if adminsanity notices loaded

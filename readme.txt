@@ -5,8 +5,8 @@ Tags: automedic, medic, reload, refresh, regenerate, heal, images, css, styleshe
 Author URI: https://dreamjester.net
 Plugin URI: https://wpmedic.tech/wp-automedic/
 Requires at least: 3.0.0
-Tested up to: 5.9.3
-Stable tag: 5.9.3
+Tested up to: 6.0
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -274,6 +274,11 @@ settings the resource will then be found and loaded. eg:
 
 
 == Changelog ==
+
+= 1.5.4 =
+* Updated: Freemius Library (2.4.3)
+* Updated: Plugin Panel (1.2.3)
+* Updated: WordQuest Helper (1.7.9)
 
 = 1.5.3 =
 * update to Plugin Panel 1.2.2

@@ -4,14 +4,14 @@
 Plugin Name: WP AutoMedic
 Plugin URI: http://wpmedic.tech/wp-automedic/
 Description: Reloads broken images and stylesheets cross-browser with plain javascript. Reduces site load problems and visitor bounce rates.
-Version: 1.5.3
+Version: 1.5.4
 Author: WP Medic
 Author URI: http://wpmedic.tech
 GitHub Plugin URI: majick777/wp-automedic
 @fs_premium_only wp-automedic-pro.php
 */
 
-if ( !function_exists( 'add_action' ) ) {
+if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
@@ -101,8 +101,9 @@ function automedic_load_wordquest_helper( $args ) {
 	if ( is_admin() && ( version_compare( PHP_VERSION, '5.3.0') >= 0 ) ) {
 		$wqhelper = dirname( __FILE__ ) . '/wordquest.php';
 		if ( file_exists( $wqhelper ) ) {
-			include( $wqhelper );
-			global $wordquestplugins; $slug = $args['slug'];
+			include $wqhelper;
+			global $wordquestplugins;
+			$slug = $args['slug'];
 			$wordquestplugins[$slug] = $args;
 		}
 	}

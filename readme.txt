@@ -2,11 +2,11 @@
 Contributors: majick
 Donate link: https://wordquest.org/contribute/?plugin=wp-automedic
 Tags: automedic, medic, reload, refresh, regenerate, heal, images, css, stylesheets, script, resources, fix, broken, automatic, automattic
-Author URI: https://dreamjester.net
+Author URI: https://wpmedic.tech
 Plugin URI: https://wpmedic.tech/wp-automedic/
 Requires at least: 3.0.0
 Tested up to: 6.0
-Stable tag: 1.5.4
+Stable tag: 1.5.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -275,6 +275,12 @@ settings the resource will then be found and loaded. eg:
 
 == Changelog ==
 
+= 1.5.5 =
+* Updated: Plugin Panel (1.2.4)
+* Updated: WordQuest Helper (1.8.0)
+* Improved: WordPress Coding Standards
+* Improved: use WP Filesystem to write minified files
+
 = 1.5.4 =
 * Updated: Freemius Library (2.4.3)
 * Updated: Plugin Panel (1.2.3)
@@ -399,7 +405,7 @@ To aid directly in development, please fork on Github and do a pull request:
 * Javascript snippet needed for non-Wordpress Child Iframes
 
 = Planned Updates/Features =
-* frature: local cache to store external images/stylesheets for fallbacks?
+* feature: local cache to store external images/stylesheets for fallbacks?
 * improvement: synchronize document.domain to help same-domain iframe checking
 * improvement: reload stylesheets @imported inside `<style>` elements?
 * test: are broken images URLs inside stylesheet rules added to reloading?

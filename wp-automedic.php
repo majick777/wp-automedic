@@ -2,11 +2,11 @@
 
 /*
 Plugin Name: WP AutoMedic
-Plugin URI: http://wpmedic.tech/wp-automedic/
+Plugin URI: https://wpmedic.tech/wp-automedic/
 Description: Reloads broken images and stylesheets cross-browser with plain javascript. Reduces site load problems and visitor bounce rates.
-Version: 1.5.4
+Version: 1.5.5
 Author: WP Medic
-Author URI: http://wpmedic.tech
+Author URI: https://wpmedic.tech
 GitHub Plugin URI: majick777/wp-automedic
 @fs_premium_only wp-automedic-pro.php
 */
@@ -47,7 +47,7 @@ function automedic_add_admin_menu( $added, $args ) {
 
 	// --- check if using parent menu ---
 	// (and parent menu capability)
-	if ( isset( $args['parentmenu']) && ( $args['parentmenu'] == 'wordquest' ) && current_user_can( $capability ) ) {
+	if ( isset( $args['parentmenu'] ) && ( 'wordquest' == $args['parentmenu'] ) && current_user_can( $capability ) ) {
 
 		// --- add WordQuest Plugin Submenu ---
 		add_submenu_page( 'wordquest', $args['pagetitle'], $args['menutitle'], $args['capability'], $args['slug'], $args['namespace'] . '_settings_page' );
@@ -67,7 +67,8 @@ function automedic_add_admin_menu( $added, $args ) {
 function automedic_wordquest_submenu_fix() {
 	$args = automedic_loader_instance()->args;
 	$icon_url = plugins_url( 'images/icon.png', $args['file'] );
-	if ( isset( $_REQUEST['page'] ) && ( $_REQUEST['page'] == $args['slug'] ) ) {$current = '1';} else {$current = '0';}
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$current = ( isset( $_REQUEST['page'] ) && ( $_REQUEST['page'] == $args['slug'] ) ) ? '1' : '0';
 	echo "<script>jQuery(document).ready(function() {if (typeof wordquestsubmenufix == 'function') {
 	wordquestsubmenufix('" . esc_js( $args['slug'] ) . "', '" . esc_url( $icon_url ) . "', '" . esc_js( $current ) . "');} });</script>";
 }
@@ -75,11 +76,11 @@ function automedic_wordquest_submenu_fix() {
 // ------------------------------
 // Add WordQuest Sidebar Settings
 // ------------------------------
-add_action( 'automedic_add_settings', 'automedic_add_settings' , 10, 1 );
+add_action( 'automedic_add_settings', 'automedic_add_settings', 10, 1 );
 function automedic_add_settings( $args ) {
 	if ( isset( $args['settings'] ) ) {
 		$adsboxoff = 'checked';
-		if ( file_exists($args['dir'] . '/updatechecker.php' ) ) {
+		if ( file_exists( $args['dir'] . '/updatechecker.php' ) ) {
 			$adsboxoff = '';
 		}
 		$sidebaroptions = array(
@@ -98,7 +99,7 @@ function automedic_add_settings( $args ) {
 // ---------------------------
 add_action( 'automedic_loader_helpers', 'automedic_load_wordquest_helper', 10, 1 );
 function automedic_load_wordquest_helper( $args ) {
-	if ( is_admin() && ( version_compare( PHP_VERSION, '5.3.0') >= 0 ) ) {
+	if ( is_admin() && ( version_compare( PHP_VERSION, '5.3.0' ) >= 0 ) ) {
 		$wqhelper = dirname( __FILE__ ) . '/wordquest.php';
 		if ( file_exists( $wqhelper ) ) {
 			include $wqhelper;
@@ -122,26 +123,26 @@ define( 'AUTOMEDIC_DIR', dirname( __FILE__ ) );
 // --------------
 // 1.5.0: updated options to use plugin loader
 $options = array(
-	'switch'	=>	array(
+	'switch'	=> array(
 		'type'		=> 'checkbox',
 		'default'	=> '1',
 	),
-	'selfcheck'	=>	array(
+	'selfcheck'	=> array(
 		'type'		=> 'checkbox',
 		'default'	=> '1',
 	),
-	'images'	=>	array(
+	'images'	=> array(
 		'type'		=> 'special',
 		'default'	=> array(
 			'reload' => 'frontend', 'delay' => 5, 'cycle' => '30', 'attempts' => 2,
-			'external' => 1, 'cache' => 1, 'import' => 0, 'debug' => 0
+			'external' => 1, 'cache' => 1, 'import' => 0, 'debug' => 0,
 		),
 	),
-	'styles'	=>	array(
+	'styles'	=> array(
 		'type'		=> 'special',
 		'default'	=> array(
 			'reload' => 'frontend', 'delay' => 2, 'cycle' => '20', 'attempts' => 3,
-			'external' => 1, 'cache' => 1, 'import' => 0, 'debug' => 0
+			'external' => 1, 'cache' => 1, 'import' => 0, 'debug' => 0,
 		),
 	),
 );
@@ -159,12 +160,12 @@ $args = array(
 
 	// --- Menus and Links ---
 	'title'			=> 'WP AutoMedic',
-	'parentmenu'		=> 'wordquest',
-	'home'			=> 'http://wpmedic.tech/wp-automedic/',
-	'support'		=> 'http://wordquest.org/quest-category/'.$slug.'/',
-	'share'			=> 'http://wpmedic.tech/wp-automedic/#share',
+	'parentmenu'	=> 'wordquest',
+	'home'			=> 'https://wpmedic.tech/wp-automedic/',
+	'support'		=> 'https://wordquest.org/quest-category/' . $slug . '/',
+	'share'			=> 'https://wpmedic.tech/wp-automedic/#share',
 	'donate'		=> 'https://patreon.com/wpmedic',
-	'donatetext'		=> __('Support WP Medic'),
+	'donatetext'	=> __( 'Support WP Medic' ),
 	'welcome'		=> '',	// TODO
 
 	// --- Options ---
@@ -175,12 +176,12 @@ $args = array(
 
 	// --- WordPress.Org ---
 	'wporgslug'		=> 'wp-automedic',
-	'textdomain'		=> 'wp-automedic',
+	'textdomain'	=> 'wp-automedic',
 	'wporg'			=> false,
 
 	// --- Freemius ---
-	'freemius_id'		=> '141',
-	'freemius_key'		=> 'pk_443cc309c3298fe00933e523b38c8',
+	'freemius_id'	=> '141',
+	'freemius_key'	=> 'pk_443cc309c3298fe00933e523b38c8',
 	'hasplans'		=> false,
 	'hasaddons'		=> false,
 	'plan'			=> 'free',
@@ -201,13 +202,15 @@ $instance = new automedic_loader( $args );
 // Transfer Old Settings
 // ---------------------
 // 1.4.0: transfer to global plugin option with indexed settings
-function automedic_transfer_settings( $settings = false ) {
+// 1.5.5: remove unused argument
+function automedic_transfer_settings() {
 	if ( !get_option( 'wp_automedic' ) && get_option( 'automedic_switch' ) ) {
 
+		$settings = array();
 		$settings['switch'] = get_option( 'automedic_switch' );
 		delete_option( 'automedic_switch' );
 		$settings['selfcheck'] = get_option( 'automedic_selfcheck' );
-		delete_option('automedic_selfcheck');
+		delete_option( 'automedic_selfcheck' );
 
 		$temp['images'] = explode( ',', get_option( 'automedic_images' ) );
 		delete_option( 'automedic_images' );
@@ -265,7 +268,9 @@ function automedic_process_settings( $options = false ) {
 	$previous['styles'] = $automedic['styles'];
 
 	// --- automedic switch ---
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing
 	if ( isset( $_POST['am_automedic_switch'] ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$automedicswitch = $_POST['am_automedic_switch'];
 		if ( '1' != $automedicswitch ) {
 			$automedicswitch = '0';
@@ -276,7 +281,9 @@ function automedic_process_settings( $options = false ) {
 	$settings['switch'] = $automedicswitch;
 
 	// --- self-check switch ---
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing
 	if ( isset( $_POST['am_automedic_selfcheck'] ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$automedicselfcheck = $_POST['am_automedic_selfcheck'];
 		if ( '1' != $automedicselfcheck ) {
 			$automedicselfcheck = '0';
@@ -298,8 +305,12 @@ function automedic_process_settings( $options = false ) {
 		foreach ( $keys as $key ) {
 			// --- get posted value ---
 			$postkey = 'am_' . $type . '_' . $key;
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( isset( $_POST[$postkey] ) ) {
-				$value = $_POST[$postkey];} else {$value = '';
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$value = $_POST[$postkey];
+			} else {
+				$value = '';
 			}
 			$debugposted[$type][$key] = $value;
 
@@ -333,7 +344,7 @@ function automedic_process_settings( $options = false ) {
 	// 1.4.0: maybe update pro options also
 	// 1.5.2: apply filter to updated settings
 	// $settings = apply_filters( 'automedic_updated_settings', $settings );
-	if ( function_exists( 'automedic_pro_update_options')) {
+	if ( function_exists( 'automedic_pro_update_options' ) ) {
 		automedic_pro_update_options();
 	}
 
@@ -360,7 +371,7 @@ function automedic_settings_page() {
 	$styles = automedic_get_setting( 'styles', false );
 
 	// 1.4.0: added pagewrap styles
-	echo '<div id="pagewrap" class="wrap" style="width:100%;margin-right:0px !important;">';
+	echo '<div id="pagewrap" class="wrap" style="width:100%;margin-right:0 !important;">';
 
 		// Sidebar Floatbox
 		// ----------------
@@ -369,6 +380,7 @@ function automedic_settings_page() {
 			wqhelper_sidebar_floatbox( $args );
 
 			// 1.4.0: replace floatmenu with stickykit
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo wqhelper_sidebar_stickykitscript();
 			echo '<style>#floatdiv {float:right;}</style>';
 			echo '<script>jQuery("#floatdiv").stick_in_parent();
@@ -471,7 +483,7 @@ function automedic_settings_page() {
 								if ( 'frontend' == $images['reload'] ) {
 									echo ' selected="selected"';
 								}
-								echo '>' . esc_html ( __( 'Frontend', 'wp-automedic' ) ) . '</option>' . PHP_EOL;
+								echo '>' . esc_html( __( 'Frontend', 'wp-automedic' ) ) . '</option>' . PHP_EOL;
 								echo '<option value="admin"';
 								if ( 'admin' == $images['reload'] ) {
 									echo ' selected="selected"';
@@ -553,7 +565,7 @@ function automedic_settings_page() {
 								if ( ( 'off' == $styles['reload'] ) || ( '' == $styles['reload'] ) ) {
 									echo ' selected="selected"';
 								}
-								echo '>' . esc_html( __('Off', 'wp-automedic' ) ) . '</option>' . PHP_EOL;
+								echo '>' . esc_html( __( 'Off', 'wp-automedic' ) ) . '</option>' . PHP_EOL;
 							echo '</select>' . PHP_EOL;
 						echo '</td><td width="10"></td>' . PHP_EOL;
 
@@ -565,7 +577,7 @@ function automedic_settings_page() {
 							echo '<input name="am_styles_cycle" type="text" style="width:30px;" value="' . esc_attr( $styles['cycle'] ) . '">s';
 						echo '</td><td width="10"></td><td align="center">';
 							// --- stylesheet reload attempts
-							echo '<input name="am_styles_attempts" type="text" style="width:30px;" value="' . esc_attr( $styles['attempts'] ) .'">';
+							echo '<input name="am_styles_attempts" type="text" style="width:30px;" value="' . esc_attr( $styles['attempts'] ) . '">';
 						echo '</td><td width="10"></td><td align="center">';
 							// --- reload external styles ---
 							echo '<input name="am_styles_external" type="checkbox" value="1"';
@@ -600,7 +612,7 @@ function automedic_settings_page() {
 						echo '</td></tr>';
 
 						// 1.4.0: maybe output pro settings inputs
-						// 1.5.2: simplified to use action hook 
+						// 1.5.2: simplified to use action hook
 						do_action( 'automedic_settings_rows' );
 
 						echo '<tr height="20"><td> </td></tr>';
@@ -618,6 +630,9 @@ function automedic_settings_page() {
 			echo '</div>'; // close #wrapbox
 		echo '</form>'; // close form
 	echo '</div>'; // close #pagewrap
+
+	// 1.5.5: load settings page resources
+	automedic_settings_resources( false, false );
 }
 
 
@@ -639,8 +654,8 @@ function automedic_enqueue_script() {
 	}
 
 	// get standard options
-	$images = automedic_get_setting('images');
-	$styles = automedic_get_setting('styles');
+	$images = automedic_get_setting( 'images' );
+	$styles = automedic_get_setting( 'styles' );
 
 	// set version as current time to avoid caching
 	// 1.4.0: set to settings save time for efficiency
@@ -703,10 +718,12 @@ function automedic_script_variables() {
 
 	// set console logging debug switches
 	// 1.4.0: simplified debug switch overrides
-	if ( isset($_REQUEST['imagedebug'] ) && ( '1' == $_REQUEST['imagedebug'] ) ) {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( isset( $_REQUEST['imagedebug'] ) && ( '1' == $_REQUEST['imagedebug'] ) ) {
 		$images['debug'] = '1';
 	}
-	if ( isset($_REQUEST['styledebug'] ) && ( '1' == $_REQUEST['styledebug'] ) ) {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( isset( $_REQUEST['styledebug'] ) && ( '1' == $_REQUEST['styledebug'] ) ) {
 		$styles['debug'] = '1';
 	}
 
@@ -716,7 +733,7 @@ function automedic_script_variables() {
 
 	// echo "<script>";
 	$js = "/* WP AutoMedic " . esc_js( $automedic['version'] ) . " - " . esc_url( $automedic['home'] ) . " */" . PHP_EOL;
-	$js .=	"var am = {}; am.images = {}; am.styles = {}; am.imagedata = {}; am.styledata = {};" . PHP_EOL;
+	$js .= "var am = {}; am.images = {}; am.styles = {}; am.imagedata = {}; am.styledata = {};" . PHP_EOL;
 
 	// Set Site URL for external checks
 	// --------------------------------
@@ -793,8 +810,9 @@ function automedic_script_variables() {
 // 1.5.1: fix for undefined variable in global scope
 add_action( 'init', 'automedic_self_checks' );
 function automedic_self_checks() {
+
 	global $automedic;
-	
+
 	if ( $automedic['switch'] && $automedic['selfcheck'] ) {
 
 		add_action( 'wp_footer', 'automedic_self_load_check', 99 );
@@ -816,10 +834,10 @@ function automedic_self_checks() {
 			// ..so much simpler to check than for dynamic scripts,
 			// as we actually know a function name to test for..!
 			// 1.5.2: check for main AutoMedic function
-			echo "<script>if (typeof AutoMedic != 'function') {" . PHP_EOL;
-			echo "	ams = document.createElement('script');" . PHP_EOL;
-			echo "	ams.src = '" . esc_url( $automedic['script'] ) . "';" . PHP_EOL;
-			echo "	document.body.appendChild(ams);" . PHP_EOL;
+			echo "<script>if (typeof AutoMedic != 'function') {";
+			echo "ams = document.createElement('script'); ";
+			echo "ams.src = '" . esc_url( $automedic['script'] ) . "'; ";
+			echo "document.body.appendChild(ams);";
 			echo "}</script>" . PHP_EOL;
 		}
 	}
@@ -869,7 +887,7 @@ function automedic_bwp() {
 
 
 // ========================
-// --- Wordpress Styles ---
+// --- WordPress Styles ---
 // ========================
 
 // --------------------
@@ -883,15 +901,15 @@ function automedic_check_style_reload() {
 	$styles = automedic_get_setting( 'styles' );
 
 	// 1.4.5: simplify and streamline context checking
-	$contexts = array('both');
+	$contexts = array( 'both' );
 	if ( is_admin() ) {
 		$contexts[] = 'admin';
 	} else {
 		$contexts[] = 'frontend';
 	}
-	
+
 	// --- check context ---
-	if ( in_array( $styles['reload' ], $contexts ) ) {
+	if ( in_array( $styles['reload'], $contexts ) ) {
 		add_filter( 'style_loader_tag', 'automedic_process_style_tags', 11, 2 );
 	}
 }
@@ -918,18 +936,19 @@ function automedic_process_style_tags( $link, $handle ) {
 	$style[$automedic['stylenum']] = $link;
 	$stylekeys = automedic_extract_tag_attributes( $style, 'style' );
 
-	// skip tag if extraction failed
-	if ( !is_array( $stylekeys ) ) {
+	// --- skip tag if extraction failed ---
+	// 1.5.5: check tag key count
+	if ( !is_array( $stylekeys ) || ( count( $stylekeys ) < 1 ) ) {
 		return $link;
 	}
 
-	// skip if not to process or already processed
+	// --- skip if not to process or already processed ---
 	if ( isset( $stylekeys[$automedic['stylenum']]['noautomedic'] )
-	  || isset( $stylekeys[$automedic['stylenum']]['automedicated'] ) ) {
-	  	return $link;
+		|| isset( $stylekeys[$automedic['stylenum']]['automedicated'] ) ) {
+		return $link;
 	}
 
-	// skip tag if no href value found
+	// --- skip tag if no href value found ---
 	if ( !isset( $stylekeys[$automedic['stylenum']]['href'] ) ) {
 		return $link;
 	} elseif ( '' == $stylekeys[$automedic['stylenum']]['href'] ) {
@@ -937,24 +956,24 @@ function automedic_process_style_tags( $link, $handle ) {
 	}
 	$stylehref = $stylekeys[$automedic['stylenum']]['href'];
 
-	// check tag for external stylesheet
+	// --- check tag for external stylesheet ---
 	// 1.4.1: improved check for external stylesheets
 	// 1.4.5: fix to mismatch variable name for external styles
 	$externalstyle = false;
-	if ( 0 !== strpos( $stylehref, $_SERVER['HTTP_HOST' ] ) ) {
+	if ( 0 !== strpos( $stylehref, $_SERVER['HTTP_HOST'] ) ) {
 		if ( ( 0 === stripos( $stylehref, 'http:' ) ) || ( 0 === stripos( $stylehref, 'https:' ) ) ) {
-	  		$externalstyle = true;
-	  	}
+			$externalstyle = true;
+		}
 	}
 
-	// skip if not to reload external stylesheets
+	// --- skip if not to reload external stylesheets ---
 	// 1.4.0: use keyed external option for stylesheets
-	$styles = automedic_get_setting('styles');
+	$styles = automedic_get_setting( 'styles' );
 	if ( $externalstyle && !$styles['external'] ) {
 		return $link;
 	}
 
-	// special: maybe convert external stylesheet href to internal @import
+	// --- special: maybe convert external stylesheet href to internal @import ---
 	if ( $externalstyle && ( 'yes' == $styles['import'] ) ) {
 		$nulink = automedic_rebuild_style_tag( $stylekeys, 'style', $automedic['stylenum'], true );
 	} else {
@@ -974,9 +993,10 @@ function automedic_process_style_tags( $link, $handle ) {
 function automedic_extract_tag_attributes( $tagelements, $tag ) {
 
 	$i = 0;
+	$tagkeys = array();
 	foreach ( $tagelements as $element ) {
-		$element = str_ireplace( '</'.$tag.'>', '', $element );
-		$element = str_ireplace( '<'.$tag, '', $element );
+		$element = str_ireplace( '</' . $tag . '>', '', $element );
+		$element = str_ireplace( '<' . $tag, '', $element );
 		$element = trim( $element );
 		if ( '>' == substr( $element, -1 ) ) {
 			$element = substr( $element, 0, strlen( $element ) -1 );
@@ -999,7 +1019,7 @@ function automedic_extract_tag_attributes( $tagelements, $tag ) {
 						$nuinside = str_replace( ' ', '|---|', $inside );
 						// another important fix, replace = inside quotes!
 						$nuinside = str_replace( '=', '|-|-|', $nuinside );
-						$element = str_replace('"' . $inside . '"', '"' . $nuinside . '"', $element );
+						$element = str_replace( '"' . $inside . '"', '"' . $nuinside . '"', $element );
 						$tempelement = str_replace( '"' . $inside . '"', '', $tempelement );
 					} else {
 						// bug out for unclosed quotes
@@ -1022,7 +1042,7 @@ function automedic_extract_tag_attributes( $tagelements, $tag ) {
 						$pos = strpos( $temp, "'" );
 						$chunks = str_split( $temp, $pos );
 						$inside = $chunks[0];
-						$nuinside = str_replace( ' ', '|---|',$inside );
+						$nuinside = str_replace( ' ', '|---|', $inside );
 						// another important fix, replace = inside quotes!
 						$nuinside = str_replace( '=', '|-|-|', $nuinside );
 						$element = str_replace( "'" . $inside . "'", "'" . $nuinside . "'", $element );
@@ -1041,7 +1061,7 @@ function automedic_extract_tag_attributes( $tagelements, $tag ) {
 
 		// split the tag string at our replaced spaces
 		if ( strstr( $element, '|||' ) ) {
-			$chunks = explode('|||', $element);
+			$chunks = explode( '|||', $element );
 		} else {
 			$chunks = array( $element );
 		}
@@ -1049,29 +1069,29 @@ function automedic_extract_tag_attributes( $tagelements, $tag ) {
 
 		foreach ( $chunks as $chunk ) {
 			if ( strstr( $chunk, '=' ) ) {
-				$parts = explode('=', $chunk);
-				$thiskey = trim($parts[0]);
+				$parts = explode( '=', $chunk );
+				$thiskey = trim( $parts[0] );
 
-				$thisvalue = trim($parts[1]);
-				if ( ( '"' == substr($thisvalue, 0, 1 ) ) && ( '"' == substr( $thisvalue, -1 ) ) ) {
+				$thisvalue = trim( $parts[1] );
+				if ( ( '"' == substr( $thisvalue, 0, 1 ) ) && ( '"' == substr( $thisvalue, -1 ) ) ) {
 					$thisvalue = substr( $thisvalue, 1, strlen( $thisvalue ) -1 );
 					// put back the spaces and = inside quotes
 					$thisvalue = str_replace( '|---|', ' ', $thisvalue );
 					$thisvalue = str_replace( '|-|-|', '=', $thisvalue );
 				} elseif ( ( "'" == substr( $thisvalue, 0, 1 ) ) && ( "'" == substr( $thisvalue, -1 ) ) ) {
-					$thisvalue = substr( $thisvalue, 1, strlen($thisvalue) -1 );
+					$thisvalue = substr( $thisvalue, 1, strlen( $thisvalue ) -1 );
 					// put back the spaces and = inside quotes
 					$thisvalue = str_replace( '|---|', ' ', $thisvalue );
 					$thisvalue = str_replace( '|-|-|', '=', $thisvalue );
 				}
 				// special: fix case variations of to specific cased version for later
-				if ( strtolower( $thiskey ) == 'src' ) {
+				if ( 'src' == strtolower( $thiskey ) ) {
 					$thiskey = 'src';
-				} elseif ( strtolower( $thiskey ) == 'onload') {
+				} elseif ( 'onload' == strtolower( $thiskey ) ) {
 					$thiskey = 'onLoad';
-				} elseif ( strtolower( $thiskey ) == 'onerror') {
+				} elseif ( 'onerror' == strtolower( $thiskey ) ) {
 					$thiskey = 'onError';
-				} elseif ( strtolower( $thiskey ) == 'onreadystatechange') {
+				} elseif ( 'onreadystatechange' == strtolower( $thiskey ) ) {
 					$thiskey = 'onReadyStateChange';
 				}
 				$tagkeys[$i][$thiskey] = $thisvalue;
@@ -1111,7 +1131,7 @@ function automedic_rebuild_style_tag( $tagkeys, $tag, $num, $import = false ) {
 	}
 
 	// --- add the automedicated attribute ---
-	$nutag .= ' automedicated'; 
+	$nutag .= ' automedicated';
 	$nutag .= ' />';
 	if ( $import ) {
 		$nutag .= '@import("' . $href . '");';
@@ -1127,7 +1147,8 @@ function automedic_rebuild_style_tag( $tagkeys, $tag, $num, $import = false ) {
 add_action( 'init', 'automedic_script_minifier' );
 function automedic_script_minifier() {
 
-	// --- check trigger conditions ---	
+	// --- check trigger conditions ---
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( !isset( $_REQUEST['am-minify'] ) || !in_array( $_REQUEST['am-minify'], array( '1', 'yes' ) ) ) {
 		return;
 	}
@@ -1152,18 +1173,17 @@ function automedic_script_minifier() {
 
 	// --- strip empty lines ---
 	$newlines = array();
-	$lines = explode( "\n", $contents);
+	$lines = explode( "\n", $contents );
 	foreach ( $lines as $line ) {
 		if ( '' != trim( $line ) ) {
 			$newlines[] = $line;
 		}
 	}
 	$contents = implode( "\n", $newlines );
-	
+
 	// --- write comment stripped script ---
-	$fh = fopen( $script, 'w' );
-	fwrite( $fh, $contents );
-	fclose( $fh );
+	// 1.5.5: use WP Filesystem writing
+	automedic_write_to_file( $script, $contents );
 
 	// --- replace long function and variable names ---
 	// note: skips letter m to prevent endless loop
@@ -1214,27 +1234,55 @@ function automedic_script_minifier() {
 	$contents = str_replace( "\t", '', $contents );
 	// $contents = str_replace( "\r", ' ', $contents );
 	// $contents = str_replace( "\n", ' ', $contents );
-	
-	// --- write minified script ---
-	$fh = fopen( $minscript, 'w' );
-	fwrite( $fh, $contents );
-	fclose( $fh );
 
-	
+	// --- write minified script ---
+	// 1.5.5: use WP Filesystem writing
+	automedic_write_to_file( $minscript, $contents );
+
 	// --- JSShrink ---
 	// include AUTOMEDIC_DIR . '/minifier.php';
 	// $minifier = new Minifier();
 	// $min = $minifier->minify( $contents );
-	// echo $min;
-	
-	// --- write minified script ---
-	// $fh = fopen( $minscript, 'w' );
-	// fwrite( $fh, $min );
-	// fclose( $fh );
-	
-	$min_url = plugins_url( 'scripts/automedic.min.js', __FILE__ );
-	echo '<script src="' . esc_url( $min_url ) . '"></script>';
+	// automedic_write_to_file( $minscript, $min );
+
+	// $min_url = plugins_url( 'scripts/automedic.min.js', __FILE__ );
+	// echo '<script src="' . esc_url( $min_url ) . '"></script>';
+
+	echo "Script has been minified." . PHP_EOL;
 	exit;
+}
+
+// ---------------------------
+// WP Filesystem Write to File
+// ---------------------------
+function automedic_write_to_file( $filepath, $data ) {
+
+	// --- force direct-only write method using WP Filesystem ---
+	global $wp_filesystem;
+	if ( empty( $wp_filesystem ) ) {
+		if ( !function_exists( 'WP_Filesytem' ) ) {
+			$filesystem = ABSPATH . 'wp-admin/includes/file.php';
+			require_once $filesystem;
+		}
+		// --- initialize WP Filesystem ---
+		WP_Filesystem();
+	}
+	$filedir = dirname( $filepath );
+
+	// --- get filesystem credentials ---
+	$credentials = request_filesystem_credentials( '', 'direct', false, $filedir, null );
+	if ( false === $credentials ) {
+		// --- bug out since we cannot do direct writing ---
+		return false;
+	}
+
+	// --- write to file --
+	$chmod = 0644;
+	if ( defined( 'FS_CHMOD_FILE' ) ) {
+		$chmod = FS_CHMOD_FILE;
+	}
+	$result = $wp_filesystem->put_contents( $filepath, $data, $chmod );
+	return $result;
 }
 
 // --------------------------
@@ -1255,24 +1303,28 @@ function pingback() {alert(\'yes\');}</script>
 
 <h3>Images</h3>
 
-<img src="test.png">
+<img src="test.png" alt="Test Image">
 
 <br><br>
 
-<img src="icon.png">
+<img src="icon.png" alt="Test Icon">
 
 
 <h3>Stylesheets</h3>
 
-Test StyleSheet<br>
-<link rel="stylesheet" href="test.css" title="mainsheet" onLoad="console.log(\'Stylesheet Load Callback\');" onReadyStateChange="console.log(\'Stylesheet onReadyStateChange Callback\');">
-Alternate StyleSheet<br>
-<link rel="alternate stylesheet" href="alternative.css" title="fallbacksheet">
+Test StyleSheet<br>';
+// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+$output .= '<link rel="stylesheet" href="test.css" title="mainsheet" onLoad="console.log(\'Stylesheet Load Callback\');" onReadyStateChange="console.log(\'Stylesheet onReadyStateChange Callback\');">
+Alternate StyleSheet<br>';
+// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+$output .= '<link rel="alternate stylesheet" href="alternative.css" title="fallbacksheet">
 
-Broken StyleSheet<br>
-<link rel="stylesheet" href="brokensheet.css" title="maintest" onError="console.log(\'Stylesheet Error Callback\');">
-Alternate StyleSheet<br>
-<link rel="alternate stylesheet" href="alternative.css" title="fallbacksheet">
+Broken StyleSheet<br>';
+// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+$output .= '<link rel="stylesheet" href="brokensheet.css" title="maintest" onError="console.log(\'Stylesheet Error Callback\');">
+Alternate StyleSheet<br>';
+// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+$output .= '<link rel="alternate stylesheet" href="alternative.css" title="fallbacksheet">
 
 <br>';
 // --- end test HTML ---
